@@ -1,0 +1,2 @@
+core.js find str 'encSecKey'
+core.js find str 'function a'

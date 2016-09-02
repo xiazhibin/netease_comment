@@ -1,6 +1,9 @@
-from main import get_rv
+import socket
+from time import sleep
+
 from redis import StrictRedis
 
+from main.comment import get_rv
 
 key = 'song_comment'
 key_count = 'key_count'
@@ -26,7 +29,11 @@ def show_rv():
 
 
 def run():
+    error_counter = 0
     while True:
+        if error_counter == 10:
+            error_counter = 0
+            sleep(10)
         song_id = get_song_id_from_redis()
         print 'song id: %s' % song_id
         if int(song_id) < 5000000:
@@ -34,7 +41,12 @@ def run():
                 comment_num = get_rv(song_id)
                 if comment_num:
                     store(song_id, comment_num)
+                sleep(4)
+            except socket.timeout as e:
+                error_counter += 1
+                print e
             except Exception as e:
+                error_counter += 1
                 print e
         else:
             break
